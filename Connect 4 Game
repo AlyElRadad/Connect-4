@@ -1,0 +1,376 @@
+#include <iostream>
+
+using std::cout;
+using std::string;
+using std::cin;
+using std::endl;
+
+#define row 6
+#define col 7
+#define empty (string) "     "
+#define red (string) "  R  "
+#define yellow (string) "  Y  "
+
+char go_0;
+
+void menu(int &a) {
+  cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\t\t\t\t*Welcome To The Entertainment "
+          "System* ";
+  cout << "\n\n\t\t\t\t\tGAME BREIF / INSTRUCTIONS : ";
+  cout << "\n";
+  cout << "\nConnect Four is a two-player connection game, in which the "
+          "players choose a color and then take turns dropping colored discs "
+          "into a   seven-column, six-row vertically suspended grid. The "
+          "pieces fall      straight down, occupying the lowest available "
+          "space within the  column. The objective of the game is to be the "
+          "first to form a     horizontal, vertical line of four of one's own "
+          "discs. Connect Four is a solved game. The first player can always "
+          "win by playing the   right moves.";
+  cout << "\n\n\t\t\t\t\t\t\t\t^^";
+  cout << "\n\n\t\t\t\t------------------------------------\n";
+  std::cout << "Press 1 To Start New Game: \n ";
+
+  if (!(cin >> a)) {
+    cin.clear();
+    cin.ignore();
+  }
+}
+
+void DisplayBoard(string a[row][col], int r, int y) {
+  cout << "\n\n\t\t\t"
+          "Red: "
+       << r << "\t"
+       << "Yellow: " << y << "\n";
+  cout << (" \n");
+  cout << ("------------------------------------------- \n");
+  cout << ("|  0  |  1  |  2  |  3  |  4  |  5  |  6  | \n");
+  cout << ("------------------------------------------- \n");
+  for (int i = row - 1; i >= 0; i--) {
+    for (int j = 0; j < col; j++) {
+      cout << "|     ";
+
+      if (j == col - 1) {
+        cout << ("|\n");
+      }
+    }
+    for (int j = 0; j < col; j++) {
+      cout << "|" << a[i][j];
+      if (j == col - 1) {
+        cout << ("|\n");
+      }
+    }
+    for (int j = 0; j < col; j++) {
+      cout << "|     ";
+      if (j == col - 1) {
+        cout << ("|\n");
+      }
+    }
+    for (int j = 0; j < col; j++) {
+      cout << "|-----";
+      if (j == col - 1) {
+        cout << ("|\n");
+      }
+    }
+  }
+}
+void initBoard(string a[row][col]) {
+  for (int i = 0; i < row; i++) {
+    for (int j = 0; j < col; j++) {
+      a[i][j] = empty;
+    }
+  }
+}
+
+int checkVerticalWin(string a[row][col], int c, string p) {
+  int count = 0;
+  for (int i = 0; i < row; i++) {
+    if (a[i][c] == p) {
+      count++;
+    } else if (count == 4) {
+      break;
+    } else {
+      count = 0;
+    }
+  }
+  if (count == 4) {
+    return 1;
+  }
+  return 0;
+}
+
+int checkHorizontalWin(string a[row][col], int r, string p) {
+  int count = 0;
+  for (int j = 0; j < col; j++) {
+    if (a[r][j] == p) {
+      count++;
+    } else if (count == 4) {
+      break;
+    } else {
+      count = 0;
+    }
+  }
+  if (count == 4) {
+    return 1;
+  }
+  return 0;
+}
+
+int checkDraw(string a[row][col]) {
+  int count = 0;
+  for (int i = 0; i < row; i++) {
+    for (int j = 0; j < col; j++) {
+      if (a[i][j] != empty) {
+        count++;
+      }
+    }
+  }
+  if (count == row * col) {
+    return 1;
+  }
+  return 0;
+}
+
+int checkCord(string a[row][col], int i, int j, string p) {
+  if (i >= row || j >= col || i < 0 || j < 0) {
+    return 0;
+  }
+  if (a[i][j] != empty) {
+    return 0;
+  }
+  a[i][j] = p;
+  return 1;
+}
+
+void promptPlayer(int *a, string p) {
+  if (p == yellow) {
+    cout << endl << ("Player 2 Drop A Yellow Disk At Column [ 0-6 ]: ") << endl;
+  } else if (p == red) {
+    cout << endl << ("Player 1 Drop A Red Disk At Column [ 0-6 ]: ") << endl;
+  }
+  scanf("%i", a);
+}
+
+int giveRow(string a[row][col], int c) {
+  for (int i = 0; i < row; i++) {
+    if (a[i][c] == empty) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+int main() {
+  int main_choice;
+  while (1) {
+    menu(main_choice);
+
+    if (main_choice == 1) {
+      string board[row][col];
+      cout << "\n\n\t\t\t\t\t\t LETS PLAY CONNECT 4 !";
+      cout << (" \n");
+
+      int redRow = 0;
+      int redCol = 0;
+
+      int yellowRow = 0;
+      int yellowCol = 0;
+
+      int scoreRed = 0;
+      int scoreYellow = 0;
+
+      initBoard(board);
+      DisplayBoard(board, scoreRed, scoreYellow);
+      while (1) {
+        // red
+        promptPlayer(&redCol, red);
+        redRow = giveRow(board, redCol);
+
+        while (redRow == -1) {
+          cout << ("Column is full \n");
+
+          promptPlayer(&redCol, red);
+          redRow = giveRow(board, redCol);
+        }
+
+        while (checkCord(board, redRow, redCol, red) == 0) {
+          cout << "ENTER VALUE WITHIN RANGE!";
+
+          promptPlayer(&redCol, red);
+          redRow = giveRow(board, redCol);
+        }
+
+        DisplayBoard(board, scoreRed, scoreYellow);
+
+        if (checkVerticalWin(board, redCol, red) == 1) {
+          cout << ("Red player won \n");
+          cout << "\n\n\t\t\t\t*Press enter for more options*"
+               << "\n";
+
+          cin.get();
+          cin.ignore();
+          scoreRed++;
+          std::cout
+              << "\n\nDo you want to Continue, Restart or Exit? (C/R/E) \n";
+          std::cin >> go_0;
+
+          if (go_0 == 'E' || go_0 == 'e') {
+            return 0;
+
+          } else if (go_0 == 'R' || go_0 == 'r') {
+            break;
+
+          } else if (go_0 == 'C' || go_0 == 'c') {
+            initBoard(board);
+            DisplayBoard(board, scoreRed, scoreYellow);
+            continue;
+          }
+        }
+
+        if (checkHorizontalWin(board, redCol, red) == 1 ||
+            checkHorizontalWin(board, redRow, red) == 1) {
+          cout << ("Red player won \n");
+          cout << "\n\n\t\t\t\t*Press enter for more options*"
+               << "\n";
+
+          cin.get();
+          cin.ignore();
+          scoreRed++;
+          std::cout
+              << "\n\nDo you want to Continue, Restart or Exit? (C/R/E) \n";
+          std::cin >> go_0;
+
+          if (go_0 == 'E' || go_0 == 'e') {
+            return 0;
+
+          } else if (go_0 == 'R' || go_0 == 'r') {
+            break;
+
+          } else if (go_0 == 'C' || go_0 == 'c') {
+            initBoard(board);
+            DisplayBoard(board, scoreRed, scoreYellow);
+            continue;
+          }
+        }
+
+        if (checkDraw(board) == 1) {
+          cout << ("Draw \n");
+          cout << "\n\n\t\t\t\t*Press enter for more options*"
+               << "\n";
+          cin.get();
+          cin.ignore();
+          std::cout
+              << "\n\nDo you want to Continue, Restart or Exit? (C/R/E) \n";
+          std::cin >> go_0;
+
+          if (go_0 == 'E' || go_0 == 'e') {
+            return 0;
+
+          } else if (go_0 == 'R' || go_0 == 'r') {
+            break;
+
+          } else if (go_0 == 'C' || go_0 == 'c') {
+            initBoard(board);
+            DisplayBoard(board, scoreRed, scoreYellow);
+            continue;
+          }
+        }
+
+        // yelloww
+        promptPlayer(&yellowCol, yellow);
+        yellowRow = giveRow(board, yellowCol);
+
+        while (yellowRow == -1) {
+          cout << ("Column is full \n");
+
+          promptPlayer(&yellowCol, yellow);
+          yellowRow = giveRow(board, yellowCol);
+        }
+
+        while (checkCord(board, yellowRow, yellowCol, yellow) == 0) {
+          cout << ("ENTER VALUE WITHIN RANGE! \n");
+
+          promptPlayer(&yellowCol, yellow);
+          yellowRow = giveRow(board, yellowCol);
+        }
+
+        DisplayBoard(board, scoreRed, scoreYellow);
+
+        if (checkVerticalWin(board, yellowCol, yellow) == 1) {
+          cout << ("Yellow player won \n");
+          cout << "\n\n\t\t\t\t*Press enter for more options*"
+               << "\n";
+          cin.get();
+          cin.ignore();
+          scoreYellow++;
+          std::cout
+              << "\n\nDo you want to Continue, Restart or Exit? (C/R/E) \n";
+          std::cin >> go_0;
+
+          if (go_0 == 'E' || go_0 == 'e') {
+            return 0;
+
+          } else if (go_0 == 'R' || go_0 == 'r') {
+            break;
+
+          } else if (go_0 == 'C' || go_0 == 'c') {
+            initBoard(board);
+            DisplayBoard(board, scoreRed, scoreYellow);
+            continue;
+          }
+        }
+
+        if (checkHorizontalWin(board, yellowCol, yellow) == 1 ||
+            checkHorizontalWin(board, yellowRow, yellow) == 1) {
+          cout << ("Yellow player won \n");
+          cout << "\n\n\t\t\t\t*Press enter for more options*"
+               << "\n";
+
+          cin.get();
+          cin.ignore();
+          scoreYellow++;
+          std::cout
+              << "\n\nDo you want to Continue, Restart or Exit? (C/R/E) \n";
+          std::cin >> go_0;
+
+          if (go_0 == 'E' || go_0 == 'e') {
+            return 0;
+
+          } else if (go_0 == 'R' || go_0 == 'r') {
+            break;
+
+          } else if (go_0 == 'C' || go_0 == 'c') {
+            initBoard(board);
+            DisplayBoard(board, scoreRed, scoreYellow);
+            continue;
+          }
+        }
+
+        if (checkDraw(board) == 1) {
+          cout << ("Draw \n");
+          cout << "\n\n\t\t\t\t*Press enter for more options*"
+               << "\n";
+          cin.get();
+          cin.ignore();
+          std::cout
+              << "\n\nDo you want to Continue, Restart or Exit? (C/R/E) \n";
+          std::cin >> go_0;
+
+          if (go_0 == 'E' || go_0 == 'e') {
+            return 0;
+
+          } else if (go_0 == 'R' || go_0 == 'r') {
+            break;
+
+          } else if (go_0 == 'C' || go_0 == 'c') {
+            initBoard(board);
+            DisplayBoard(board, scoreRed, scoreYellow);
+            continue;
+          }
+        }
+      }
+    } else {
+      cout << "Please input a correct choice";
+    }
+  }
+  cout << endl;
+}
